@@ -45,7 +45,7 @@
 
     async function loadSiswa() {
       const kelas = document.getElementById("kelas").value;
-      const response = await fetch(`https://script.google.com/macros/s/AKfycbxXn-VYv9T_c-omJv8LZAYggNKn84eweH7oPNIsa5Gu8njwYaABpMDUMPdo99QKOm1o/exec?kelas=${kelas}`);
+      const response = await fetch(`https://script.google.com/macros/s/AKfycbyYVJaSDzqXCkoHwxcW8OE5aOQiaFiCRxAdzKyN8FrjAOET2CI6UYvo9dxWa6P68fxe/exec?kelas=${kelas}`);
       siswaList = await response.json();
 
       const tbody = document.getElementById("absenTableBody");
@@ -80,7 +80,7 @@
         };
       });
 
-      fetch("https://script.google.com/macros/s/AKfycbxXn-VYv9T_c-omJv8LZAYggNKn84eweH7oPNIsa5Gu8njwYaABpMDUMPdo99QKOm1o/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbyYVJaSDzqXCkoHwxcW8OE5aOQiaFiCRxAdzKyN8FrjAOET2CI6UYvo9dxWa6P68fxe/exec", {
         method: "POST",
         body: JSON.stringify({ tanggal, kelas, absensi }),
         headers: { "Content-Type": "application/json" }
