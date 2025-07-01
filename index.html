@@ -1,92 +1,218 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Absensi Dinamis</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
-    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 5px; }
-    th { background-color: #f0f0f0; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
+    body > .container {
+      flex: 1 0 auto; /* supaya container flexible dan footer di bawah */
+      padding-top: 40px;
+      padding-bottom: 40px;
+    }
+    .card {
+      background: rgba(255,255,255,0.1);
+      border-radius: 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    h1 {
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+    }
+    table thead {
+      background-color: #A5D6A7;
+      color: #1B5E20;
+    }
+    table tbody tr {
+      background: #fff;
+      color: #333;
+    }
     footer {
-      margin-top: 40px;
+      flex-shrink: 0; /* supaya footer tidak mengecil */
       text-align: center;
-      color: gray;
+      color: rgba(255,255,255,0.7);
       font-size: 14px;
+      padding: 15px 0;
+      background-color: #1B5E20;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.3);
+    }
+    button.btn-warning {
+      background-color: #81C784;
+      border-color: #66BB6A;
+      color: #1B5E20;
+      font-weight: 600;
+    }
+    button.btn-warning:hover {
+      background-color: #66BB6A;
+      border-color: #4CAF50;
+      color: white;
+    }
+    button.btn-success {
+      background-color: #388E3C;
+      border-color: #2E7D32;
+      font-weight: 600;
+    }
+    button.btn-success:hover {
+      background-color: #2E7D32;
+      border-color: #1B5E20;
+      color: white;
     }
   </style>
 </head>
 <body>
-  <h2>Form Absensi Kelas</h2>
-  <label>Tanggal: <input type="date" id="tanggal" required></label><br><br>
-  <label>Kelas:
-    <input type="text" id="kelas" placeholder="Contoh: 7A" required>
-    <button onclick="loadSiswa()">Muat Siswa</button>
-  </label><br><br>
+  <div class="container">
+    <div class="card p-4 mx-auto" style="max-width: 600px;">
+      <h1 class="text-center mb-4">Absensi Dinamis</h1>
 
-  <form id="absenForm" style="display:none;">
-    <table>
-      <thead>
-        <tr>
-          <th>No</th>
-          <th>Nama</th>
-          <th>M</th><th>I</th><th>S</th><th>A</th>
-        </tr>
-      </thead>
-      <tbody id="absenTableBody"></tbody>
-    </table><br>
-    <button type="submit">Kirim Absensi</button>
-  </form>
+      <div class="mb-3">
+        <label for="kelas" class="form-label fw-semibold">Kelas</label>
+        <input
+          type="text"
+          id="kelas"
+          class="form-control"
+          placeholder="Contoh: 7A"
+          required
+        />
+      </div>
 
-  <footer>
-    Versi 1.0 &copy; 2025 Absensi Dinamis
-  </footer>
+      <div class="mb-3">
+        <label for="tanggal" class="form-label fw-semibold">Tanggal</label>
+        <input
+          type="date"
+          id="tanggal"
+          class="form-control"
+          required
+        />
+      </div>
+
+      <button id="btnLoad" class="btn btn-warning w-100 fw-bold mb-3">Muat Siswa</button>
+
+      <form id="absenForm" style="display:none;">
+        <div class="table-responsive">
+          <table class="table table-bordered text-center align-middle">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>M</th>
+                <th>I</th>
+                <th>S</th>
+                <th>A</th>
+              </tr>
+            </thead>
+            <tbody id="absenTableBody"></tbody>
+          </table>
+        </div>
+        <button type="submit" class="btn btn-success w-100 fw-bold">Kirim Absensi</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>Versi 1.0 &copy; 2025 Absensi Dinamis</footer>
+
+  <!-- Bootstrap 5 JS bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
+    const appUrl = "https://script.google.com/macros/s/AKfycbxziT52oc1YRPwg2j-IiGwylTCvTTRL_tZvcxlt1Ds0qp72OCyv-qkmaw5ATJdph_c/exec";
+
+    const kelasInput = document.getElementById("kelas");
+    const tanggalInput = document.getElementById("tanggal");
+    const btnLoad = document.getElementById("btnLoad");
+    const absenForm = document.getElementById("absenForm");
+    const tbody = document.getElementById("absenTableBody");
+
     let siswaList = [];
 
-    async function loadSiswa() {
-      const kelas = document.getElementById("kelas").value;
-      const response = await fetch(`https://script.google.com/macros/s/AKfycbyYVJaSDzqXCkoHwxcW8OE5aOQiaFiCRxAdzKyN8FrjAOET2CI6UYvo9dxWa6P68fxe/exec?kelas=${kelas}`);
-      siswaList = await response.json();
+    window.addEventListener("load", () => {
+      const today = new Date().toISOString().slice(0, 10);
+      tanggalInput.value = today;
+    });
 
-      const tbody = document.getElementById("absenTableBody");
-      tbody.innerHTML = "";
-      siswaList.forEach((siswa, index) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${siswa.no}</td>
-          <td>${siswa.nama}</td>
-          <td><input type="radio" name="status-${index}" value="M" required></td>
-          <td><input type="radio" name="status-${index}" value="I"></td>
-          <td><input type="radio" name="status-${index}" value="S"></td>
-          <td><input type="radio" name="status-${index}" value="A"></td>
-        `;
-        tbody.appendChild(tr);
-      });
+    btnLoad.addEventListener("click", async () => {
+      const kelas = kelasInput.value.trim();
+      const tanggal = tanggalInput.value;
 
-      document.getElementById("absenForm").style.display = "block";
-    }
+      if (!kelas) return alert("Mohon isi Kelas!");
+      if (!tanggal) return alert("Mohon isi Tanggal!");
 
-    document.getElementById("absenForm").addEventListener("submit", function(e) {
+      try {
+        const res = await fetch(`${appUrl}?kelas=${encodeURIComponent(kelas)}`);
+        if (!res.ok) throw new Error("Gagal mengambil data siswa.");
+        siswaList = await res.json();
+
+        if (!siswaList.length) {
+          alert("Data siswa tidak ditemukan untuk kelas tersebut.");
+          absenForm.style.display = "none";
+          return;
+        }
+
+        tbody.innerHTML = "";
+        siswaList.forEach((siswa, i) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${siswa.no}</td>
+            <td>${siswa.nama}</td>
+            <td><input type="radio" name="status-${i}" value="M" required></td>
+            <td><input type="radio" name="status-${i}" value="I"></td>
+            <td><input type="radio" name="status-${i}" value="S"></td>
+            <td><input type="radio" name="status-${i}" value="A" checked></td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        absenForm.style.display = "block";
+      } catch (err) {
+        alert("Error: " + err.message);
+        absenForm.style.display = "none";
+      }
+    });
+
+    absenForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const tanggal = document.getElementById("tanggal").value;
-      const kelas = document.getElementById("kelas").value;
 
-      const absensi = siswaList.map((siswa, index) => {
-        const status = document.querySelector(`input[name="status-${index}"]:checked`)?.value || "";
+      const kelas = kelasInput.value.trim();
+      const tanggal = tanggalInput.value;
+
+      const absensi = siswaList.map((siswa, i) => {
+        const status = document.querySelector(`input[name="status-${i}"]:checked`)?.value || "";
         return {
           no: siswa.no,
           nama: siswa.nama,
-          status
+          status,
         };
       });
 
-      fetch("https://script.google.com/macros/s/AKfycbyYVJaSDzqXCkoHwxcW8OE5aOQiaFiCRxAdzKyN8FrjAOET2CI6UYvo9dxWa6P68fxe/exec", {
-        method: "POST",
-        body: JSON.stringify({ tanggal, kelas, absensi }),
-        headers: { "Content-Type": "application/json" }
-      }).then(res => res.text()).then(response => {
+      if (absensi.some(a => !a.status)) {
+        alert("Mohon pilih status untuk semua siswa.");
+        return;
+      }
+
+      try {
+        const res = await fetch(appUrl, {
+          method: "POST",
+          body: JSON.stringify({ tanggal, kelas, absensi }),
+          headers: {
+            "Content-Type": "application/json"
+          },
+        });
+        if (!res.ok) throw new Error("Gagal mengirim absensi.");
         alert("Absensi berhasil dikirim!");
-      });
+        absenForm.style.display = "none";
+        tbody.innerHTML = "";
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
     });
   </script>
 </body>
