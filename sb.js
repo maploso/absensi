@@ -1,4 +1,4 @@
-const appUrl = "https://script.google.com/macros/s/AKfycbzHIR16o-9kU3pqiqyLFJ5V5dSirQdXdtSr8wSG-bqvNLXaPpoWWI-oGyy3wy4vgaQ/exec";
+const appUrl = "https://script.google.com/macros/s/AKfycbzZJS5pSD58lb5E8VoEun4U6JePTCnAPYQJrChUbyvOetI2i8jS1LN3LKNXIlMMNXZ3/exec";
 
 const kelasInput = document.getElementById("kelas");
 const tanggalInput = document.getElementById("tanggal");
@@ -32,23 +32,6 @@ function getTodayJakarta() {
     return `${year}-${month}-${day}`;
 }
 
-function convertToJakartaDate(utcDate) {
-    // Convert the UTC string to a Date object
-    const date = new Date(utcDate);
-
-    // Jakarta offset in minutes (UTC +7)
-    const jakartaOffset = 7 * 60;
-
-    // Convert UTC time to Jakarta time
-    const jakartaTime = new Date(date.getTime() + jakartaOffset * 60000);
-
-    // Format date to 'yyyy-mm-dd' for display
-    const year = jakartaTime.getUTCFullYear();
-    const month = String(jakartaTime.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(jakartaTime.getUTCDate()).padStart(2, '0');
-
-    return `${year}-${month}-${day}`;
-}
 
 
 const tanggalHariIniP = document.getElementById("tanggalHariIni");
@@ -75,16 +58,10 @@ btnLoad.addEventListener("click", async () => {
         if (!res.ok) throw new Error("Gagal mengambil data siswa.");
         const data = await res.json();
 
-        // Pastikan kita menggunakan variabel global siswaList
-        siswaList = data.siswa;
+        const siswaList = data.siswa;
         const absensiList = data.absensi;
 
-        // Mengonversi tanggal yang diterima dari backend (dalam format UTC) ke Jakarta
-        absensiList.forEach(absensi => {
-            absensi.tanggal = convertToJakartaDate(absensi.tanggal);
-        });
-
-        console.log("Data Siswa:", siswaList);  // Debugging
+        console.log("Data Siswa:", siswaList); // Debugging
 
         if (!siswaList.length) {
             alert("Data siswa tidak ditemukan untuk kelas tersebut.");
@@ -102,7 +79,7 @@ btnLoad.addEventListener("click", async () => {
 
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td>${i + 1}</td>
+                <td>${siswa.no}</td>
                 <td>${siswa.nama}</td>
                 <td><input type="radio" name="status-${i}" value="M" ${status === "M" ? "checked" : ""}></td>
                 <td><input type="radio" name="status-${i}" value="I" ${status === "I" ? "checked" : ""}></td>
@@ -142,10 +119,10 @@ absenForm.addEventListener("submit", async (e) => {
     if (!kelas) return alert("Mohon isi Kelas!");
     if (!tanggal) return alert("Mohon isi Tanggal!");
 
-    // Membuat array absensi berdasarkan siswaList dan status yang dipilih
     const absensi = siswaList.map((siswa, i) => {
         const status = document.querySelector(`input[name="status-${i}"]:checked`)?.value || "A";
         const jam = document.querySelector(`.jam-cell[data-index="${i}"]`)?.textContent || "";
+        console.log(`Status for ${siswa.nama}: ${status}, Jam: ${jam}`);
         return {
             no: siswa.no,
             nama: siswa.nama,
@@ -153,6 +130,8 @@ absenForm.addEventListener("submit", async (e) => {
             jam
         };
     });
+
+    console.log("Absensi yang dikirim:", absensi); // Debugging
 
     if (absensi.some(a => !a.status)) {
         alert("Mohon pilih status untuk semua siswa.");
@@ -164,7 +143,6 @@ absenForm.addEventListener("submit", async (e) => {
     submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Mengirim...`;
 
     try {
-        // Mengirim seluruh absensi sekaligus
         const res = await fetch(appUrl, {
             method: "POST",
             body: JSON.stringify({ tanggal, kelas, absensi }),
@@ -173,21 +151,18 @@ absenForm.addEventListener("submit", async (e) => {
             },
             redirect: "follow"
         });
-
         if (!res.ok) throw new Error("Gagal mengirim absensi.");
         const data = await res.json();
-
         if (data.status === "success") {
-            alert("Semua absensi berhasil dikirim!");
+            alert("Absensi berhasil dikirim!");
             absenForm.style.display = "none";
             tbody.innerHTML = "";
             kelasInput.value = "";
             tanggalInput.value = getTodayJakarta();
-            siswaList = [];  // Reset siswaList setelah kirim
+            siswaList = [];
         } else {
-            throw new Error(data.message || "Tidak diketahui");
+            alert("Error: " + (data.message || "Tidak diketahui"));
         }
-
     } catch (err) {
         alert("Error: " + err.message);
     } finally {
@@ -195,3 +170,4 @@ absenForm.addEventListener("submit", async (e) => {
         submitBtn.innerHTML = "Kirim Absensi";
     }
 });
+
