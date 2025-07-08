@@ -1,77 +1,13 @@
-<!DOCTYPE html>
-<html lang="id">
-
-<head>
+<!doctype html>
+<html lang="">
+  <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Absensi Ma'had Aly Al Falah Ploso</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="assets/css/styles.css?v=1.0" rel="stylesheet" />
-
-</head>
-
-<body>
-    <div class="container">
-        <div class="card p-4 mx-auto" style="max-width: 600px;">
-
-            <!-- Logo di atas judul -->
-            <div class="text-center mb-4">
-                <img id="logo" src="assets/images/logo.png" alt="Logo Ma'had Aly Al Falah Ploso" class="img-fluid">
-            </div>
-
-
-            <h1 class="text-center mb-4">
-                Absensi Ma'had Aly <br>
-                Al Falah Ploso
-            </h1>
-
-
-            <div class="mb-3">
-                <label for="kelas" class="form-label fw-semibold">Kelas</label>
-                <input type="text" id="kelas" class="form-control" placeholder="Contoh: FQB" required />
-            </div>
-
-            <div class="mb-3">
-                <label for="tanggal" class="form-label fw-semibold">Tanggal</label>
-                <!-- Tambahan paragraf tampilkan tanggal hari ini -->
-                <p id="tanggalHariIni" style="color: #c8ffc8; font-weight: 600; margin-bottom: 0.5rem;"></p>
-                <input type="date" id="tanggal" class="form-control" required />
-            </div>
-
-
-            <button id="btnLoad" class="btn btn-warning w-100 fw-bold mb-3">Muat Siswa</button>
-
-            <form id="absenForm" style="display:none;">
-                <div class="table-responsive">
-                    <table class="table table-bordered text-center align-middle">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama</th>
-                                <th>M</th>
-                                <th>I</th>
-                                <th>S</th>
-                                <th>A</th>
-                                <th>Jam</th>
-
-                            </tr>
-                        </thead>
-                        <tbody id="absenTableBody"></tbody>
-                    </table>
-                </div>
-                <button type="submit" class="btn btn-success w-100 fw-bold">Kirim Absensi</button>
-            </form>
-        </div>
-    </div>
-
-    <footer>Versi 1.0 &copy; 2025 Developed by Ma'had Aly Al Falah Ploso</footer>
-
-
-    <!-- Bootstrap 5 JS bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script src="script.js"></script>
-</body>
-
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Absensi App</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>
