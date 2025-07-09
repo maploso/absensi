@@ -3,6 +3,7 @@
 export interface Siswa {
   no: string
   nama: string
+  kamar: string
 }
 
 export interface Absensi {
@@ -10,4 +11,5 @@ export interface Absensi {
   nama: string
   status: 'M' | 'I' | 'S' | 'A'
   jam: string
+  readonly?: boolean
 }

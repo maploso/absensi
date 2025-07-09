@@ -2,7 +2,10 @@
   <section
     class="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex flex-col items-center justify-center px-4"
   >
-    <div class="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-lg border border-gray-100">
+    <!-- Ubah max-w-lg menjadi responsif -->
+    <div
+      class="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-lg md:max-w-3xl lg:max-w-4xl xl:max-w-5xl border border-gray-100"
+    >
       <!-- Logo -->
       <div class="text-center mb-6">
         <img
@@ -13,10 +16,12 @@
       </div>
 
       <!-- Judul -->
-      <h1 class="text-3xl font-extrabold text-center text-gray-800 mb-2 leading-snug">
-        Absensi Ma'had Aly <br />
-        Al Falah Ploso
+      <h1 class="text-xl md:text-2xl font-bold text-center text-gray-800 leading-tight mb-1">
+        Absensi Ma'had Aly
       </h1>
+      <h2 class="text-lg md:text-xl font-semibold text-center text-gray-700 mb-4">
+        Al Falah Ploso
+      </h2>
 
       <div class="text-center border-b border-green-300 mb-4 pb-4">
         <p class="text-sm text-gray-500 tracking-wide uppercase">Hari Ini</p>

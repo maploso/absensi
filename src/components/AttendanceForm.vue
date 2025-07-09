@@ -4,10 +4,7 @@
     <div class="space-y-4 mb-6">
       <div>
         <label class="block font-semibold mb-1">Kelas</label>
-        <select v-model="kelas" class="input">
-          <option disabled value="">-- Pilih Kelas --</option>
-          <option v-for="k in availableClasses" :key="k" :value="k">{{ k }}</option>
-        </select>
+        <input :value="kelas" class="input bg-gray-100" disabled />
       </div>
 
       <div>
@@ -32,6 +29,7 @@
           <thead class="bg-gray-100 sticky top-0 z-10 shadow text-sm">
             <tr>
               <th class="px-2">No</th>
+              <th class="px-2">Kamar</th>
               <th class="px-2">Nama</th>
               <th class="px-2">M</th>
               <th class="px-2">I</th>
@@ -53,7 +51,13 @@
               }"
             >
               <td class="px-2">{{ i + 1 }}</td>
-              <td class="text-left px-2">{{ siswa.nama }}</td>
+              <td class="text-left px-2">{{ siswa.kamar }}</td>
+              <td class="text-left px-2">
+                {{ siswa.nama }}
+                <span v-if="absensi[i].readonly" class="text-xs text-yellow-600 italic">
+                  (izin majek)</span
+                >
+              </td>
               <td class="px-1">
                 <input
                   type="radio"
@@ -61,7 +65,7 @@
                   value="M"
                   v-model="absensi[i].status"
                   @change="setJam(i)"
-                  :disabled="submitting"
+                  :disabled="submitting || absensi[i].readonly"
                 />
               </td>
               <td class="px-1">
@@ -71,7 +75,7 @@
                   value="I"
                   v-model="absensi[i].status"
                   @change="setJam(i)"
-                  :disabled="submitting"
+                  :disabled="submitting || absensi[i].readonly"
                 />
               </td>
               <td class="px-1">
@@ -81,7 +85,7 @@
                   value="S"
                   v-model="absensi[i].status"
                   @change="setJam(i)"
-                  :disabled="submitting"
+                  :disabled="submitting || absensi[i].readonly"
                 />
               </td>
               <td class="px-1">
@@ -91,7 +95,7 @@
                   value="A"
                   v-model="absensi[i].status"
                   @change="setJam(i)"
-                  :disabled="submitting"
+                  :disabled="submitting || absensi[i].readonly"
                 />
               </td>
               <td class="px-2">{{ absensi[i].jam }}</td>
@@ -131,14 +135,16 @@
 <script setup lang="ts">
 import type { Absensi, Siswa } from '@/types/attendance'
 import { getTodayDateInputFormat } from '@/utils/date'
-import { availableClasses, classScriptUrls } from '@/config'
+import { classScriptUrls } from '@/config'
 
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import ToastMessage from '@/components/ToastMessage.vue'
 
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-const kelas = ref('')
+const router = useRouter()
+
 const tanggal = ref(getTodayDateInputFormat())
 
 const siswaList = ref<Siswa[]>([])
@@ -152,6 +158,13 @@ const toast = ref({
   message: '',
   type: 'success' as 'success' | 'error' | 'info',
 })
+
+const user = JSON.parse(localStorage.getItem('loginUser') || '{}')
+const kelas = ref(user.kelas || '')
+
+if (!user || !user.kelas) {
+  router.push('/login')
+}
 
 function showToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
   toast.value = { message, type }
@@ -225,11 +238,15 @@ async function loadSiswa() {
 
     absensi.value = siswaList.value.map((siswa) => {
       const found = absensiList.find((a) => a.no === siswa.no)
+      const status = found?.status ?? 'A'
+      const jam = found?.jam ?? '-'
       return {
         no: siswa.no,
         nama: siswa.nama,
-        status: found?.status ?? 'A',
-        jam: found?.jam ?? '-',
+        kamar: siswa.kamar,
+        status,
+        jam,
+        readonly: status === 'I' && jam === '-', // ← ini untuk booking izin
       }
     })
 
@@ -293,7 +310,6 @@ function resetForm() {
   showForm.value = false
   siswaList.value = []
   absensi.value = []
-  kelas.value = ''
   tanggal.value = getTodayDateInputFormat()
 }
 </script>

@@ -1,12 +1,13 @@
 <!-- src/components/ToastMessage.vue -->
 <template>
   <div
-    class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded shadow-lg text-white animate-fade-in-up"
+    class="fixed bottom-4 z-50 px-6 py-3 rounded shadow-lg text-white animate-fade-in-up"
     :class="{
       'bg-green-600': type === 'success',
       'bg-red-600': type === 'error',
       'bg-blue-600': type === 'info',
     }"
+    style="left: 50%; transform: translateX(-50%)"
   >
     {{ message }}
   </div>
