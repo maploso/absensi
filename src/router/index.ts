@@ -25,6 +25,12 @@ const routes: RouteRecordRaw[] = [
         meta: { requiresAuth: true },
       },
       {
+        path: '/admin/izin',
+        name: 'FormIzin',
+        component: () => import('@/pages/FormIzin.vue'),
+        meta: { requiresAdmin: true },
+      },
+      {
         path: 'attendance',
         name: 'AttendancePage',
         component: () => import('@/pages/AttendancePage.vue'),
@@ -53,10 +59,14 @@ const router = createRouter({
 
 // 🛡️ Navigation Guard
 router.beforeEach((to, from, next) => {
-  const isLoggedIn = !!localStorage.getItem('loginUser')
+  const userRaw = localStorage.getItem('loginUser')
+  const user = userRaw ? JSON.parse(userRaw) : null
+  const isLoggedIn = !!user
 
   if (to.meta.requiresAuth && !isLoggedIn) {
     next('/login')
+  } else if (to.meta.requiresAdmin && (!isLoggedIn || user.role !== 'admin')) {
+    next('/') // redirect ke home kalau bukan admin
   } else if (to.path === '/login' && isLoggedIn) {
     next('/') // jika sudah login, cegah akses ke /login
   } else {

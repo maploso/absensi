@@ -52,15 +52,9 @@ async function handleLogin() {
     const res = await fetch(`${loginEndpoint}?username=${username.value}&password=${hashed}`)
     const data = await res.json()
 
-    if (data.status === 'success') {
-      localStorage.setItem(
-        'loginUser',
-        JSON.stringify({
-          username: username.value,
-          nama: data.nama,
-          kelas: data.kelas,
-        }),
-      )
+    if (data.status === 'success' && data.user) {
+      // Simpan semua informasi user langsung dari respon
+      localStorage.setItem('loginUser', JSON.stringify(data.user))
       router.push('/')
     } else {
       error.value = data.message || 'Login gagal'

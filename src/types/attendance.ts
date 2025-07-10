@@ -12,4 +12,6 @@ export interface Absensi {
   status: 'M' | 'I' | 'S' | 'A'
   jam: string
   readonly?: boolean
+  sumberIzin?: 'pajek' | 'izin' | ''
+  keterangan?: string
 }

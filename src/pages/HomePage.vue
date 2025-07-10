@@ -29,16 +29,29 @@
       <div class="flex flex-col gap-4">
         <RouterLink to="/attendance" class="btn-main"> 📝 Absen Mahasantri </RouterLink>
         <RouterLink to="/report" class="btn-main"> 📊 Rekap Absensi </RouterLink>
+        <RouterLink v-if="user.kelas === 'ADMIN'" to="/admin/izin" class="btn-main">
+          ✍️ Input Izin
+        </RouterLink>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-const user = JSON.parse(localStorage.getItem('loginUser') || '{}')
-const kelas = ref(user?.kelas || '')
+const user = ref({ nama: '', kelas: '' })
+const router = useRouter()
+onMounted(() => {
+  const savedUser = localStorage.getItem('loginUser')
+  if (!savedUser) {
+    router.push('/login')
+  } else {
+    user.value = JSON.parse(savedUser)
+  }
+})
+const kelas = computed(() => user.value.kelas)
 </script>
 
 <style scoped>

@@ -4,7 +4,14 @@
     <div class="space-y-4 mb-6">
       <div>
         <label class="block font-semibold mb-1">Kelas</label>
-        <input :value="kelas" class="input bg-gray-100" disabled />
+        <template v-if="isAdmin">
+          <select v-model="kelas" class="input">
+            <option v-for="k in Object.keys(classScriptUrls)" :key="k" :value="k">{{ k }}</option>
+          </select>
+        </template>
+        <template v-else>
+          <input :value="kelas" class="input bg-gray-100" disabled />
+        </template>
       </div>
 
       <div>
@@ -54,10 +61,16 @@
               <td class="text-left px-2">{{ siswa.kamar }}</td>
               <td class="text-left px-2">
                 {{ siswa.nama }}
-                <span v-if="absensi[i].readonly" class="text-xs text-yellow-600 italic">
-                  (izin majek)</span
-                >
+                <template v-if="absensi[i].sumberIzin === 'pajek'">
+                  <span class="ml-1 text-yellow-700 text-xs italic">(izin majek)</span>
+                </template>
+                <template v-else-if="absensi[i].sumberIzin === 'izin'">
+                  <span class="ml-1 text-green-700 text-xs italic">
+                    (izin: {{ absensi[i].keterangan || 'tanpa keterangan' }})
+                  </span>
+                </template>
               </td>
+
               <td class="px-1">
                 <input
                   type="radio"
@@ -166,6 +179,8 @@ if (!user || !user.kelas) {
   router.push('/login')
 }
 
+const isAdmin = user.role === 'admin'
+
 function showToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
   toast.value = { message, type }
   setTimeout(() => (toast.value.message = ''), 3000)
@@ -176,12 +191,18 @@ function getAppUrl(): string | null {
 }
 
 function setJam(index: number) {
-  const now = new Date()
-  absensi.value[index].jam = now.toLocaleTimeString('id-ID', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  })
+  const status = absensi.value[index].status
+  if (status === 'M') {
+    const now = new Date()
+    absensi.value[index].jam = now.toLocaleTimeString('id-ID', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    })
+  } else {
+    // Kosongkan jam jika bukan hadir (opsional)
+    absensi.value[index].jam = '-'
+  }
 }
 
 function formatJam(raw: string | undefined) {
@@ -223,6 +244,8 @@ async function loadSiswa() {
       status: string
       jam: string
       tanggal: string
+      sumberIzin?: 'pajek' | 'izin' | ''
+      keterangan?: string
     }[]
 
     siswaList.value = siswaData
@@ -234,6 +257,8 @@ async function loadSiswa() {
       nama: '',
       status: a.status as Absensi['status'],
       jam: formatJam(a.jam),
+      sumberIzin: a.sumberIzin || '',
+      keterangan: a.keterangan || '',
     }))
 
     absensi.value = siswaList.value.map((siswa) => {
@@ -246,7 +271,9 @@ async function loadSiswa() {
         kamar: siswa.kamar,
         status,
         jam,
-        readonly: status === 'I' && jam === '-', // ← ini untuk booking izin
+        readonly: status === 'I' && jam === '-',
+        sumberIzin: found?.sumberIzin || '',
+        keterangan: found?.keterangan || '',
       }
     })
 

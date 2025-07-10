@@ -1,14 +1,27 @@
 <template>
   <svg
     class="spinner align-middle"
-    width="20"
-    height="20"
+    :width="size"
+    :height="size"
     viewBox="0 0 50 50"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5" />
+    <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5" :stroke="color" />
   </svg>
 </template>
+
+<script setup lang="ts">
+const { size, color } = withDefaults(
+  defineProps<{
+    size?: number
+    color?: string
+  }>(),
+  {
+    size: 20,
+    color: '#ffffff', // default: putih
+  },
+)
+</script>
 
 <style scoped>
 .spinner {
@@ -17,7 +30,6 @@
   animation: rotate 1s linear infinite;
 }
 .path {
-  stroke: white;
   stroke-linecap: round;
   animation: dash 1.5s ease-in-out infinite;
 }

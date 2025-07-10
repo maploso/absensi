@@ -22,7 +22,20 @@
         <!-- Kelas -->
         <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center shadow-sm">
           <div class="text-sm text-gray-500 mb-1">Kelas Anda</div>
-          <div class="text-lg font-semibold text-green-700">{{ kelas }}</div>
+          <div v-if="isAdmin">
+            <label class="block font-semibold text-sm text-gray-700 mb-1">🏷️ Pilih Kelas</label>
+            <select v-model="kelas" class="input">
+              <option v-for="k in Object.keys(classScriptUrls)" :key="k" :value="k">{{ k }}</option>
+            </select>
+          </div>
+
+          <div
+            v-else
+            class="bg-green-50 border border-green-200 rounded-lg p-4 text-center shadow-sm"
+          >
+            <div class="text-sm text-gray-500 mb-1">Kelas Anda</div>
+            <div class="text-lg font-semibold text-green-700">{{ kelas }}</div>
+          </div>
         </div>
 
         <!-- Rentang Tanggal + Tombol -->
@@ -133,7 +146,7 @@ const user = JSON.parse(localStorage.getItem('loginUser') || '{}')
 if (!user || !user.kelas) {
   router.push('/login')
 }
-
+const isAdmin = user.role === 'admin'
 const kelas = ref(user.kelas || '')
 const tanggalAwal = ref(getTodayDateInputFormat())
 const tanggalAkhir = ref(getTodayDateInputFormat())
