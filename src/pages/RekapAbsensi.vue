@@ -28,12 +28,7 @@
               <option v-for="k in Object.keys(classScriptUrls)" :key="k" :value="k">{{ k }}</option>
             </select>
           </div>
-
-          <div
-            v-else
-            class="bg-green-50 border border-green-200 rounded-lg p-4 text-center shadow-sm"
-          >
-            <div class="text-sm text-gray-500 mb-1">Kelas Anda</div>
+          <div v-else>
             <div class="text-lg font-semibold text-green-700">{{ kelas }}</div>
           </div>
         </div>
