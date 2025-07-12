@@ -200,9 +200,17 @@ function setJam(index: number) {
       hour12: false,
     })
   } else {
-    // Kosongkan jam jika bukan hadir (opsional)
     absensi.value[index].jam = '-'
   }
+
+  // Set readonly berdasarkan status dan sumberIzin
+  setReadonly(index)
+}
+
+function setReadonly(index: number) {
+  const abs = absensi.value[index]
+  absensi.value[index].readonly =
+    abs.status === 'I' && (abs.sumberIzin === 'pajek' || abs.sumberIzin === 'izin')
 }
 
 function formatJam(raw: string | undefined) {
@@ -244,6 +252,7 @@ async function loadSiswa() {
       status: string
       jam: string
       tanggal: string
+      readonly?: boolean
       sumberIzin?: 'pajek' | 'izin' | ''
       keterangan?: string
     }[]
@@ -271,7 +280,7 @@ async function loadSiswa() {
         kamar: siswa.kamar,
         status,
         jam,
-        readonly: status === 'I' && jam === '-',
+        readonly: found?.sumberIzin === 'pajek' || found?.sumberIzin === 'izin',
         sumberIzin: found?.sumberIzin || '',
         keterangan: found?.keterangan || '',
       }
@@ -298,10 +307,9 @@ async function submitAbsen() {
   uploadProgress.value = 0
 
   try {
-    // Simulasikan progres (karena fetch tidak support native progress)
     const interval = setInterval(() => {
-      if (uploadProgress.value < 90) uploadProgress.value += 10
-    }, 150)
+      if (uploadProgress.value < 96) uploadProgress.value += 1
+    }, 900)
 
     const res = await fetch(appUrl, {
       method: 'POST',
