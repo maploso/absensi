@@ -192,18 +192,20 @@ function getAppUrl(): string | null {
 
 function setJam(index: number) {
   const status = absensi.value[index].status
+
   if (status === 'M') {
     const now = new Date()
-    absensi.value[index].jam = now.toLocaleTimeString('id-ID', {
+    const formatter = new Intl.DateTimeFormat('id-ID', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false,
+      timeZone: 'Asia/Jakarta',
     })
+    absensi.value[index].jam = formatter.format(now)
   } else {
     absensi.value[index].jam = '-'
   }
 
-  // Set readonly berdasarkan status dan sumberIzin
   setReadonly(index)
 }
 
@@ -213,16 +215,17 @@ function setReadonly(index: number) {
     abs.status === 'I' && (abs.sumberIzin === 'pajek' || abs.sumberIzin === 'izin')
 }
 
-function formatJam(raw: string | undefined) {
-  if (!raw) return '-'
-  const date = new Date(raw)
-  // Jika invalid date, langsung return raw
-  if (isNaN(date.getTime())) return raw
-  return date.toLocaleTimeString('id-ID', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  })
+function formatJam(jam: string) {
+  if (!jam || jam === '-' || (!jam.includes(':') && !jam.includes('.'))) return '-'
+
+  const delimiter = jam.includes(':') ? ':' : '.'
+  const [hour, minute] = jam.split(delimiter)
+
+  // Jaga-jaga agar hasil tetap valid
+  const h = hour?.padStart(2, '0') || '00'
+  const m = minute?.padStart(2, '0') || '00'
+
+  return `${h}.${m}`
 }
 
 function count(status: 'M' | 'I' | 'S' | 'A') {
