@@ -43,7 +43,6 @@
               <th class="px-2">S</th>
               <th class="px-2">A</th>
               <th class="px-2">Jam</th>
-              <th class="px-2">✔️</th>
             </tr>
           </thead>
           <tbody>
@@ -133,9 +132,6 @@
                 />
               </td>
               <td class="px-2">{{ absensi[i].jam }}</td>
-              <td class="px-2">
-                <input type="checkbox" v-model="absensi[i].centang" :disabled="submitting" />
-              </td>
             </tr>
           </tbody>
         </table>
@@ -311,7 +307,6 @@ async function loadSiswa() {
         readonly: found?.sumberIzin === 'pajek' || found?.sumberIzin === 'izin',
         sumberIzin: found?.sumberIzin || '',
         keterangan: found?.keterangan || '',
-        centang: found?.centang ?? false,
       }
     })
 
