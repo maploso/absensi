@@ -14,4 +14,5 @@ export interface Absensi {
   readonly?: boolean
   sumberIzin?: 'pajek' | 'izin' | ''
   keterangan?: string
+  centang?: boolean
 }

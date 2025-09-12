@@ -43,6 +43,7 @@
               <th class="px-2">S</th>
               <th class="px-2">A</th>
               <th class="px-2">Jam</th>
+              <th class="px-2">✔️</th>
             </tr>
           </thead>
           <tbody>
@@ -77,7 +78,12 @@
                   :name="`status-${i}`"
                   value="M"
                   v-model="absensi[i].status"
-                  @change="setJam(i)"
+                  @change="
+                    () => {
+                      setJam(i)
+                      submitStatusPerSiswa(i)
+                    }
+                  "
                   :disabled="submitting || absensi[i].readonly"
                 />
               </td>
@@ -87,7 +93,12 @@
                   :name="`status-${i}`"
                   value="I"
                   v-model="absensi[i].status"
-                  @change="setJam(i)"
+                  @change="
+                    () => {
+                      setJam(i)
+                      submitStatusPerSiswa(i)
+                    }
+                  "
                   :disabled="submitting || absensi[i].readonly"
                 />
               </td>
@@ -97,7 +108,12 @@
                   :name="`status-${i}`"
                   value="S"
                   v-model="absensi[i].status"
-                  @change="setJam(i)"
+                  @change="
+                    () => {
+                      setJam(i)
+                      submitStatusPerSiswa(i)
+                    }
+                  "
                   :disabled="submitting || absensi[i].readonly"
                 />
               </td>
@@ -107,11 +123,19 @@
                   :name="`status-${i}`"
                   value="A"
                   v-model="absensi[i].status"
-                  @change="setJam(i)"
+                  @change="
+                    () => {
+                      setJam(i)
+                      submitStatusPerSiswa(i)
+                    }
+                  "
                   :disabled="submitting || absensi[i].readonly"
                 />
               </td>
               <td class="px-2">{{ absensi[i].jam }}</td>
+              <td class="px-2">
+                <input type="checkbox" v-model="absensi[i].centang" :disabled="submitting" />
+              </td>
             </tr>
           </tbody>
         </table>
@@ -271,6 +295,7 @@ async function loadSiswa() {
       jam: formatJam(a.jam),
       sumberIzin: a.sumberIzin || '',
       keterangan: a.keterangan || '',
+      centang: false,
     }))
 
     absensi.value = siswaList.value.map((siswa) => {
@@ -286,6 +311,7 @@ async function loadSiswa() {
         readonly: found?.sumberIzin === 'pajek' || found?.sumberIzin === 'izin',
         sumberIzin: found?.sumberIzin || '',
         keterangan: found?.keterangan || '',
+        centang: found?.centang ?? false,
       }
     })
 
@@ -350,6 +376,39 @@ function resetForm() {
   siswaList.value = []
   absensi.value = []
   tanggal.value = getTodayDateInputFormat()
+}
+
+async function submitStatusPerSiswa(index: number) {
+  const abs = absensi.value[index]
+  const appUrl = getAppUrl()
+
+  if (!appUrl) return showToast('URL tidak ditemukan.', 'error')
+
+  try {
+    const res = await fetch(appUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'updateStatus',
+        kelas: kelas.value,
+        tanggal: tanggal.value,
+        data: {
+          no: abs.no,
+          status: abs.status,
+          jam: abs.jam,
+        },
+      }),
+    })
+
+    const result = await res.json()
+
+    if (result.status !== 'success') {
+      showToast(result.message || 'Gagal memperbarui status.', 'error')
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    showToast(`Error: ${message}`, 'error')
+  }
 }
 </script>
 
