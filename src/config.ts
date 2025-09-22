@@ -2,16 +2,16 @@ export const loginEndpoint =
   'https://script.google.com/macros/s/AKfycbyInr9SHJhujrGzOJVo_wtZlaDt7i304LO07g7-0bIDWONYsChUqPlHDS0tMkoG8S1C/exec'
 
 export const classScriptUrls: Record<string, string> = {
-  FQA: 'https://script.google.com/macros/s/AKfycbyo1Erb7X_1twABRjas3iM1Cc-rZPPfBA3lz34rar62CM6XWflbM436lmjFbG2jOuBQ/exec',
-  FQB: 'https://script.google.com/macros/s/AKfycbygm3xNP9WUEbiC52_6uGEzvIWZNLzK2T4E08UwhUJfogdvdVHiJYQ336Zpf9jZ2_XM4A/exec',
-  FQC: 'https://script.google.com/macros/s/AKfycbzL-vV7AEIVwo-tMpnt6zuebAjejYwXvx30afMxnkZamVjH60ZHBUO_W8oXl2WA2abxTw/exec',
-  FQD: 'https://script.google.com/macros/s/AKfycbzrJek5Eor1LFuyGsgnJuiPQ1YwMhlbo9rLqqe6407qQAVfDwBjUZ7bSBAHsUZP4C5gqA/exec',
-  FMA: 'https://script.google.com/macros/s/AKfycbwO1B8OWbpHhWs4S7sktTEclpGKRQoh7W_dBUNPibgcZjdL_wk5_6yo-ELbvLv1_rY-/exec',
-  FMB: 'https://script.google.com/macros/s/AKfycbxuwaExyXDha7xagfTRxqweNFSKLmp1AsxGNsHLTbJmRVcD61aBguMj9nvNfgRxv49T6g/exec',
-  FMC: 'https://script.google.com/macros/s/AKfycbz9DaPxIGyYK7p2KLqTxng6-eM4cYPxul5L8TGRB7ad1BOSyrviEdvP299dwjM4NN5U/exec',
-  FMD: 'https://script.google.com/macros/s/AKfycbyMW7ZKdm1jVC8hES--dUJyxyNPdZqc90okeU9lV9uFOrlLHeM4qHti2-KszKGvR7kMjQ/exec',
-  FW1A: 'https://script.google.com/macros/s/AKfycbyNGgHPA6HbhT2iF1ZZvIKV5x1XjI7oQeqyV2A85r0blIUnoz_CT32d9zvcN3-IkreG/exec',
-  FW1B: 'https://script.google.com/macros/s/AKfycbxWqeHeM4hxYDTvKULxhKjlevuiWYk6CfW5X3mUpAiXN-WqH8N1OvQc0Ydv00_FTmlI/exec',
+  FQA: 'https://script.google.com/macros/s/AKfycbzXLM9GUv3e2BiY_p9dQGxRkri-6mDF9PZRaDryHE756MFzc9-ZQiViUO37BTVfl3cL/exec',
+  FQB: 'https://script.google.com/macros/s/AKfycbyiACb-7aDDc5GxwN3WEMg1QrObBwQuIYNvQ7vAqsyNgMOtLPJfKOuvz6liegrVlKrGPQ/exec',
+  FQC: 'https://script.google.com/macros/s/AKfycbwPem7KOuWRsRqw-ccJGjpnwS5rf-rvr7H9LlmfI-1kksKNwiJVrbQwlDEcDiUP0ng9jQ/exec',
+  FQD: 'https://script.google.com/macros/s/AKfycbwiVVdxF5qBAFAdw7AVtOL-7FswmsCFklFVIMwI6mRcjC7j5a98uKjr2ttRXea4Js3S_g/exec',
+  FMA: 'https://script.google.com/macros/s/AKfycbzqNTxDXc4y8B_eRhGDpB6clUPYWIfVokN3yrk5J2BsDCzV1h_vwTCevBt28Rku9B5wiw/exec',
+  FMB: 'https://script.google.com/macros/s/AKfycbwcsZiStjT7YoedPUjcwF3cL16agQF9E3a16doOUzebYbgwrZaRXMuSL_vevOUbqov4GA/exec',
+  FMC: 'https://script.google.com/macros/s/AKfycbzU6o0cFz90htFzcatnpykCV3cG0J0maDbBt5Aee0Z2oFAQS6c_vFyaKvM5J4UxUClw/exec',
+  FMD: 'https://script.google.com/macros/s/AKfycbz25jLaRO57-JFvU99ivZFfyw8ZdD3H_xp3rHvGgIlIlZScMZWKTTcoIH-rg5Cgqc9KfQ/exec',
+  FW1A: 'https://script.google.com/macros/s/AKfycbwAzUs3EFHyCiXYYqZKFdPNfb_3OG2sq2OuLkMhuLk_sOmM9JRTq_skHBHs-vWjN3uu/exec',
+  FW1B: 'https://script.google.com/macros/s/AKfycbzGL_cWRkMr8BFpTPLR00a6aDtlIhPK1B2y56O0kFxmREdjAS32DIWznUBdHwy5BxK_/exec',
 }
 
 export const availableClasses = Object.keys(classScriptUrls)

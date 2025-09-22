@@ -27,6 +27,12 @@
         <LoadingSpinner v-if="loading" class="mr-2" />
         Muat Mahasantri
       </button>
+      <div
+        :style="{ display: showRekapan ? 'block' : 'none' }"
+        class="text-center font-semibold text-lg mt-4"
+      >
+        Rekapan 14 Hari Terakhir
+      </div>
     </div>
 
     <!-- Table -->
@@ -43,6 +49,10 @@
               <th class="px-2">S</th>
               <th class="px-2">A</th>
               <th class="px-2">Jam</th>
+              <th class="px-2 py-2">Hadir</th>
+              <th class="px-2 py-2">Izin</th>
+              <th class="px-2 py-2">Sakit</th>
+              <th class="px-2 py-2">Alpha</th>
             </tr>
           </thead>
           <tbody>
@@ -132,6 +142,10 @@
                 />
               </td>
               <td class="px-2">{{ absensi[i].jam }}</td>
+              <td class="px-1">{{ siswa.statusCount.M || 0 }}</td>
+              <td class="px-1">{{ siswa.statusCount.I || 0 }}</td>
+              <td class="px-1">{{ siswa.statusCount.S || 0 }}</td>
+              <td class="px-1">{{ siswa.statusCount.A || 0 }}</td>
             </tr>
           </tbody>
         </table>
@@ -183,6 +197,7 @@ const tanggal = ref(getTodayDateInputFormat())
 const siswaList = ref<Siswa[]>([])
 const absensi = ref<Absensi[]>([])
 const showForm = ref(false)
+const showRekapan = ref(false)
 const loading = ref(false)
 const submitting = ref(false)
 const uploadProgress = ref(0)
@@ -261,6 +276,7 @@ async function loadSiswa() {
 
   loading.value = true
   showForm.value = false
+  showRekapan.value = false
 
   try {
     const res = await fetch(
@@ -269,7 +285,7 @@ async function loadSiswa() {
     if (!res.ok) throw new Error('Gagal mengambil data siswa.')
 
     const data = await res.json()
-    const siswaData: Siswa[] = data.siswa || []
+    const siswaData: Siswa[] = data.siswaStatusCount || []
     const absensiData = (data.absensi || []) as {
       no: string
       status: string
@@ -311,6 +327,7 @@ async function loadSiswa() {
     })
 
     showForm.value = true
+    showRekapan.value = true
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     showToast(`Error: ${message}`, 'error')

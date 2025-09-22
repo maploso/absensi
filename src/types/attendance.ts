@@ -4,6 +4,12 @@ export interface Siswa {
   no: string
   nama: string
   kamar: string
+  statusCount: {
+    M: number // Jumlah Hadir/Masuk
+    I: number // Jumlah Izin
+    S: number // Jumlah Sakit
+    A: number // Jumlah Alpha
+  }
 }
 
 export interface Absensi {
