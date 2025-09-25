@@ -2,6 +2,39 @@
   <div>
     <!-- Input Form -->
     <div class="space-y-4 mb-6">
+      <!-- QR Code Stream -->
+      <p class="text-center">Scan code QR.</p>
+      <div class="w-48 h-48 m-auto">
+        <qrcode-stream
+          :key="qrKey"
+          :constraints="selectedConstraints"
+          :formats="['qr_code']"
+          @error="onError"
+          @detect="onDetect"
+          @camera-on="onCameraReady"
+        />
+      </div>
+      <br />
+
+      <!-- <p id="resultDisplay">Hasil QR Code akan muncul di sini.</p> -->
+      <!-- Manual Input Section -->
+      <!-- <div class="mt-4">
+        <label class="block font-semibold mb-1"
+          >Masukkan NIM_Tanggal_Status (Contoh: MA-1234_2023-09-25_M)</label
+        >
+        <input
+          v-model="nimTanggalInput"
+          type="text"
+          class="input"
+          placeholder="NIM_Tanggal_Status"
+        />
+        <button
+          @click="updateStatusFromTextbox"
+          class="btn-warning w-full flex items-center justify-center mt-4"
+        >
+          Kirim Status Manual
+        </button>
+      </div> -->
       <div>
         <label class="block font-semibold mb-1">Kelas</label>
         <template v-if="isAdmin">
@@ -42,6 +75,7 @@
           <thead class="bg-gray-100 sticky top-0 z-10 shadow text-sm">
             <tr>
               <th class="px-2">No</th>
+              <th class="px-2">NIM</th>
               <th class="px-2">Kamar</th>
               <th class="px-2">Nama</th>
               <th class="px-2">M</th>
@@ -68,6 +102,7 @@
               }"
             >
               <td class="px-2">{{ i + 1 }}</td>
+              <td class="text-left px-2">{{ siswa.no }}</td>
               <td class="text-left px-2">{{ siswa.kamar }}</td>
               <td class="text-left px-2">
                 {{ siswa.nama }}
@@ -189,6 +224,7 @@ import ToastMessage from '@/components/ToastMessage.vue'
 
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { QrcodeStream } from 'vue-qrcode-reader'
 
 const router = useRouter()
 
@@ -201,10 +237,13 @@ const showRekapan = ref(false)
 const loading = ref(false)
 const submitting = ref(false)
 const uploadProgress = ref(0)
+const nimTanggalInput = ref('')
+const result = ref('')
+const qrKey = ref(0)
 
 const toast = ref({
   message: '',
-  type: 'success' as 'success' | 'error' | 'info',
+  type: 'success' as 'success' | 'error' | 'info' | 'warning',
 })
 
 const user = JSON.parse(localStorage.getItem('loginUser') || '{}')
@@ -216,7 +255,23 @@ if (!user || !user.kelas) {
 
 const isAdmin = user.role === 'admin'
 
-function showToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
+// QR code scanning constraints (e.g. camera facing mode)
+const selectedConstraints = ref({ facingMode: 'environment' })
+
+// Error handling
+const error = ref('')
+
+// Error callback function
+function onError(err: Error) {
+  error.value = `[${err.name}]: ${err.message}`
+}
+
+// Camera ready callback
+function onCameraReady() {
+  console.log('Camera is ready')
+}
+
+function showToast(message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info') {
   toast.value = { message, type }
   setTimeout(() => (toast.value.message = ''), 3000)
 }
@@ -420,6 +475,100 @@ async function submitStatusPerSiswa(index: number) {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     showToast(`Error: ${message}`, 'error')
+  }
+}
+
+function updateStatusFromTextbox() {
+  const input = nimTanggalInput.value.trim()
+  if (!input) return showToast('Input tidak boleh kosong.', 'error')
+
+  // Pola: PAGI_NIM_TANGGAL_STATUS
+  const parts = input.split('_')
+  if (parts.length !== 4) {
+    return showToast('Format salah. Gunakan: PAGI_NIM_TANGGAL_STATUS', 'error')
+  }
+
+  const [waktu, nimRaw, tgl, status] = parts
+  const nim = nimRaw.trim().toUpperCase()
+  const validStatus = ['M', 'I', 'S', 'A']
+
+  if (!validStatus.includes(status)) {
+    return showToast(`Status "${status}" tidak valid. Gunakan M/I/S/A.`, 'error')
+  }
+
+  if (tgl !== tanggal.value) {
+    return showToast(`Tanggal tidak sesuai (${tgl} ≠ ${tanggal.value}).`, 'error')
+  }
+
+  // Cari NIM aman
+  const index = absensi.value.findIndex((a) => {
+    const siswaNo = String(a.no || '')
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '')
+    const nimClean = nim.replace(/[^A-Z0-9]/g, '')
+    return siswaNo === nimClean
+  })
+
+  if (index === -1) {
+    return showToast(`NIM ${nim} tidak ditemukan di daftar.`, 'error')
+  }
+
+  // Update status
+  absensi.value[index].status = status as 'M' | 'I' | 'S' | 'A'
+  setJam(index)
+
+  // Auto submit status per siswa
+  submitStatusPerSiswa(index)
+
+  // Ambil nama + mapping status
+  const nama = absensi.value[index].nama || `NIM ${nim}`
+  const statusMap: Record<string, string> = {
+    M: 'MASUK',
+    I: 'IZIN',
+    S: 'SAKIT',
+    A: 'ALFA',
+  }
+  const colorMap: Record<string, 'success' | 'warning' | 'info' | 'error'> = {
+    M: 'success', // hijau
+    I: 'warning', // kuning
+    S: 'info', // biru
+    A: 'error', // merah
+  }
+
+  result.value = `${nama} ${statusMap[status]}`
+  showToast(result.value, colorMap[status])
+}
+
+function onDetect(detectedCodes: { rawValue: string }[]) {
+  if (detectedCodes.length > 0) {
+    const firstDetectedCode = detectedCodes[0]
+    const raw = firstDetectedCode.rawValue.trim()
+
+    let formattedResult = ''
+
+    // Cek apakah hasil QR sudah pakai format panjang (ada "_")
+    if (raw.includes('_')) {
+      // Format panjang, langsung pakai
+      formattedResult = raw
+    } else {
+      // Format pendek (hanya NIM), kita susun ulang
+      const nim = raw
+      const shift = 'PAGI' // bisa juga ambil dari dropdown user
+      const tanggal = new Date().toISOString().split('T')[0] // 2025-09-25
+      const status = 'M' // bisa juga ambil dari form user
+
+      formattedResult = `${shift}_${nim}_${tanggal}_${status}`
+    }
+
+    result.value = formattedResult
+    qrKey.value++
+
+    const resultDisplay = document.getElementById('resultDisplay')
+    if (resultDisplay) {
+      resultDisplay.textContent = `Hasil QR Code: ${formattedResult}`
+    }
+    nimTanggalInput.value = formattedResult
+    updateStatusFromTextbox()
   }
 }
 </script>

@@ -6,6 +6,7 @@
       'bg-green-600': type === 'success',
       'bg-red-600': type === 'error',
       'bg-blue-600': type === 'info',
+      'bg-yellow-500': type === 'warning',
     }"
     style="left: 50%; transform: translateX(-50%)"
   >
@@ -15,7 +16,7 @@
 
 <script setup lang="ts">
 defineProps<{
-  type: 'success' | 'error' | 'info'
+  type: 'success' | 'error' | 'info' | 'warning'
   message: string
 }>()
 </script>

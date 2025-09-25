@@ -14,4 +14,11 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  server: {
+    allowedHosts: [
+      'cierra-pyroclastic-windily.ngrok-free.dev', // Tambahkan host ngrok di sini
+      'localhost',
+      '127.0.0.1',
+    ],
+  },
 })
