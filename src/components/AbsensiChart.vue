@@ -79,6 +79,27 @@
             >{{ rataHadirGlobal }}%</span
           >
         </div>
+        <!-- Persentase Izin -->
+        <div class="text-gray-600 font-medium">
+          🎯 Persentase Izin:
+          <span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs"
+            >{{ persentaseIzinGlobal }}%</span
+          >
+        </div>
+        <!-- Persentase Sakit -->
+        <div class="text-gray-600 font-medium">
+          🎯 Persentase Sakit:
+          <span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs"
+            >{{ persentaseSakitGlobal }}%</span
+          >
+        </div>
+        <!-- Persentase Alpha -->
+        <div class="text-gray-600 font-medium">
+          🎯 Persentase Alpha:
+          <span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs"
+            >{{ persentaseAlphaGlobal }}%</span
+          >
+        </div>
       </div>
     </div>
   </div>
@@ -143,6 +164,27 @@ const rataHadirGlobal = computed(() => {
   return Math.round((totalHadir / totalKesempatan) * 100)
 })
 
+const persentaseIzinGlobal = computed(() => {
+  const totalHari = statistikPerTanggal.value.length
+  const totalIzin = totalGlobal.value.I
+  const totalKesempatan = totalSiswa.value * totalHari
+  return totalKesempatan ? Math.round((totalIzin / totalKesempatan) * 100) : 0
+})
+
+const persentaseSakitGlobal = computed(() => {
+  const totalHari = statistikPerTanggal.value.length
+  const totalSakit = totalGlobal.value.S
+  const totalKesempatan = totalSiswa.value * totalHari
+  return totalKesempatan ? Math.round((totalSakit / totalKesempatan) * 100) : 0
+})
+
+const persentaseAlphaGlobal = computed(() => {
+  const totalHari = statistikPerTanggal.value.length
+  const totalAlpha = totalGlobal.value.A
+  const totalKesempatan = totalSiswa.value * totalHari
+  return totalKesempatan ? Math.round((totalAlpha / totalKesempatan) * 100) : 0
+})
+
 function getChartData(): ChartData<'bar'> {
   if (isPersentase.value) {
     return {
@@ -154,6 +196,24 @@ function getChartData(): ChartData<'bar'> {
           backgroundColor: 'rgba(34,197,94,0.7)',
           borderRadius: 4,
         },
+        {
+          label: 'Persentase Izin (🟡)',
+          data: statistikPerTanggal.value.map((s) => Math.round((s.I / totalSiswa.value) * 100)),
+          backgroundColor: 'rgba(234,179,8,0.7)',
+          borderRadius: 4,
+        },
+        {
+          label: 'Persentase Sakit (🔵)',
+          data: statistikPerTanggal.value.map((s) => Math.round((s.S / totalSiswa.value) * 100)),
+          backgroundColor: 'rgba(59,130,246,0.7)',
+          borderRadius: 4,
+        },
+        {
+          label: 'Persentase Alpha (❌)',
+          data: statistikPerTanggal.value.map((s) => Math.round((s.A / totalSiswa.value) * 100)),
+          backgroundColor: 'rgba(239,68,68,0.7)',
+          borderRadius: 4,
+        },
       ],
     }
   } else {
@@ -161,25 +221,25 @@ function getChartData(): ChartData<'bar'> {
       labels: statistikPerTanggal.value.map((s) => s.tanggal),
       datasets: [
         {
-          label: 'Hadir (✔️)',
+          label: 'Jumlah Hadir (✔️)',
           data: statistikPerTanggal.value.map((s) => s.M),
           backgroundColor: 'rgba(34,197,94,0.7)',
           borderRadius: 4,
         },
         {
-          label: 'Izin (🟡)',
+          label: 'Jumlah Izin (🟡)',
           data: statistikPerTanggal.value.map((s) => s.I),
           backgroundColor: 'rgba(234,179,8,0.7)',
           borderRadius: 4,
         },
         {
-          label: 'Sakit (🔵)',
+          label: 'Jumlah Sakit (🔵)',
           data: statistikPerTanggal.value.map((s) => s.S),
           backgroundColor: 'rgba(59,130,246,0.7)',
           borderRadius: 4,
         },
         {
-          label: 'Alpha (❌)',
+          label: 'Jumlah Alpha (❌)',
           data: statistikPerTanggal.value.map((s) => s.A),
           backgroundColor: 'rgba(239,68,68,0.7)',
           borderRadius: 4,
@@ -188,7 +248,6 @@ function getChartData(): ChartData<'bar'> {
     }
   }
 }
-
 function renderChart() {
   if (!canvasRef.value) return
   if (chartInstance) chartInstance.destroy()
