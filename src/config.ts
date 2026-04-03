@@ -12,6 +12,7 @@ export const classScriptUrls: Record<string, string> = {
   FMD: 'https://script.google.com/macros/s/AKfycbz25jLaRO57-JFvU99ivZFfyw8ZdD3H_xp3rHvGgIlIlZScMZWKTTcoIH-rg5Cgqc9KfQ/exec',
   FW1A: 'https://script.google.com/macros/s/AKfycbwAzUs3EFHyCiXYYqZKFdPNfb_3OG2sq2OuLkMhuLk_sOmM9JRTq_skHBHs-vWjN3uu/exec',
   FW1B: 'https://script.google.com/macros/s/AKfycbzGL_cWRkMr8BFpTPLR00a6aDtlIhPK1B2y56O0kFxmREdjAS32DIWznUBdHwy5BxK_/exec',
+  FW1C: 'https://script.google.com/macros/s/AKfycbxKjLWj5k7VnvJXspQTtcERgnjGWbfBEpTk3vBV-Yu5ghFk5OT_x1fMppraTXiNh-fn/exec',
 }
 
 export const availableClasses = Object.keys(classScriptUrls)
