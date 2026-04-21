@@ -38,9 +38,9 @@
           href="https://absen-kelas-mkt.vercel.app"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition"
+          class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition"
         >
-          🔗 LINK ABSENI BARU
+          🔗 LINK ABSENSI BARU
         </a>
       </div>
 
